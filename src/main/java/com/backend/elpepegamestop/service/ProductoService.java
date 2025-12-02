@@ -3,7 +3,6 @@ package com.backend.elpepegamestop.service;
 import com.backend.elpepegamestop.dto.ProductoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,7 +20,6 @@ public class ProductoService {
     /**
      * Obtener todos los productos con filtros opcionales
      */
-    @Cacheable(value = "productos", unless = "#result == null || #result.isEmpty()")
     public List<ProductoDTO> getAllProductos(
             String categoria,
             String plataforma,
@@ -54,7 +52,6 @@ public class ProductoService {
     /**
      * Obtener producto por ID
      */
-    @Cacheable(value = "producto", key = "#id")
     public ProductoDTO getProductoById(String id) {
         log.info("Fetching producto by ID: {}", id);
 

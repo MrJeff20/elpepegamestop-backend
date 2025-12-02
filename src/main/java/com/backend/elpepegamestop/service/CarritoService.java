@@ -3,23 +3,23 @@ package com.backend.elpepegamestop.service;
 import com.backend.elpepegamestop.dto.ProductoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CarritoService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
     private final ProductoService productoService;
+    
+    // Cache en memoria para carritos (en producción considerar Redis o base de datos)
+    private final Map<String, Map<String, Object>> carritosCache = new ConcurrentHashMap<>();
 
     private static final String CART_PREFIX = "cart:";
-    private static final long CART_EXPIRATION_HOURS = 24;
 
     /**
      * Agregar producto al carrito
@@ -32,8 +32,7 @@ public class CarritoService {
             throw new RuntimeException("Producto no encontrado");
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> carrito = (Map<String, Object>) redisTemplate.opsForValue().get(key);
+        Map<String, Object> carrito = carritosCache.get(key);
 
         if (carrito == null) {
             carrito = new HashMap<>();
@@ -66,7 +65,7 @@ public class CarritoService {
         carrito.put("total", total);
         carrito.put("updatedAt", new Date());
 
-        redisTemplate.opsForValue().set(key, carrito, CART_EXPIRATION_HOURS, TimeUnit.HOURS);
+        carritosCache.put(key, carrito);
 
         log.info("Producto {} agregado al carrito del usuario {}", productoId, usuarioId);
     }
@@ -77,8 +76,7 @@ public class CarritoService {
     public Map<String, Object> getCarrito(String usuarioId) {
         String key = CART_PREFIX + usuarioId;
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> carrito = (Map<String, Object>) redisTemplate.opsForValue().get(key);
+        Map<String, Object> carrito = carritosCache.get(key);
 
         if (carrito == null) {
             carrito = new HashMap<>();
@@ -95,8 +93,7 @@ public class CarritoService {
     public void eliminarDelCarrito(String usuarioId, String productoId) {
         String key = CART_PREFIX + usuarioId;
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> carrito = (Map<String, Object>) redisTemplate.opsForValue().get(key);
+        Map<String, Object> carrito = carritosCache.get(key);
 
         if (carrito != null) {
             @SuppressWarnings("unchecked")
@@ -113,7 +110,7 @@ public class CarritoService {
                 carrito.put("total", total);
                 carrito.put("updatedAt", new Date());
 
-                redisTemplate.opsForValue().set(key, carrito, CART_EXPIRATION_HOURS, TimeUnit.HOURS);
+                carritosCache.put(key, carrito);
 
                 log.info("Producto {} eliminado del carrito del usuario {}", productoId, usuarioId);
             }
@@ -125,7 +122,7 @@ public class CarritoService {
      */
     public void vaciarCarrito(String usuarioId) {
         String key = CART_PREFIX + usuarioId;
-        redisTemplate.delete(key);
+        carritosCache.remove(key);
         log.info("Carrito vaciado para el usuario {}", usuarioId);
     }
 }
