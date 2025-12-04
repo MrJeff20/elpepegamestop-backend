@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductoService {
 
-    private final XanoApiService xanoApiService;
     private final RestTemplate restTemplate;
 
     /**
@@ -32,14 +31,14 @@ public class ProductoService {
         log.info("Fetching productos with filters - categoria: {}", categoria);
 
         try {
-            // Llamar al endpoint de Xano usando XanoApiService
-            String endpoint = "/query/3240164";
-            
+            // Llamar al endpoint de Xano para productos
             ParameterizedTypeReference<List<ProductoDTO>> typeRef = 
                 new ParameterizedTypeReference<List<ProductoDTO>>() {};
             
-            // Construir URL completa
-            String url = "https://x8ki-letl-twmt.n7.xano.io/api:RhHXFYRP" + endpoint;
+            // Usar la URL completa del endpoint de productos
+            String url = "https://x8ki-letl-twmt.n7.xano.io/api:RhHXFYRP/product";
+            
+            log.info("Fetching products from: {}", url);
             
             ResponseEntity<List<ProductoDTO>> response = restTemplate.exchange(
                 url,
@@ -75,7 +74,14 @@ public class ProductoService {
         log.info("Fetching producto by ID: {}", id);
 
         try {
-            return xanoApiService.get(xanoApiService.getProductosUrl(), "/product/" + id, ProductoDTO.class, null);
+            String url = "https://x8ki-letl-twmt.n7.xano.io/api:RhHXFYRP/product/" + id;
+            ResponseEntity<ProductoDTO> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                ProductoDTO.class
+            );
+            return response.getBody();
         } catch (Exception e) {
             log.error("Error fetching producto by ID: {}", id, e);
             throw new RuntimeException("Producto no encontrado: " + e.getMessage(), e);
