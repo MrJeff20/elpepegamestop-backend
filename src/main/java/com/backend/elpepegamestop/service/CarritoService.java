@@ -47,13 +47,13 @@ public class CarritoService {
             Map<String, Object> item = items.get(productoId);
             int nuevaCantidad = (int) item.get("cantidad") + cantidad;
             item.put("cantidad", nuevaCantidad);
-            item.put("subtotal", producto.getPrecio().multiply(BigDecimal.valueOf(nuevaCantidad)));
+            item.put("subtotal", BigDecimal.valueOf(producto.getPrice()).multiply(BigDecimal.valueOf(nuevaCantidad)));
         } else {
             Map<String, Object> nuevoItem = new HashMap<>();
             nuevoItem.put("producto", producto);
             nuevoItem.put("cantidad", cantidad);
-            nuevoItem.put("precioUnitario", producto.getPrecio());
-            nuevoItem.put("subtotal", producto.getPrecio().multiply(BigDecimal.valueOf(cantidad)));
+            nuevoItem.put("precioUnitario", BigDecimal.valueOf(producto.getPrice()));
+            nuevoItem.put("subtotal", BigDecimal.valueOf(producto.getPrice()).multiply(BigDecimal.valueOf(cantidad)));
             items.put(productoId, nuevoItem);
         }
 

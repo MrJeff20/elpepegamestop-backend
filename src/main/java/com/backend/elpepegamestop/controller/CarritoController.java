@@ -10,7 +10,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/carrito")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CarritoController {
 
     private final CarritoService carritoService;

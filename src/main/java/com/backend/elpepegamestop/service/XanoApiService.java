@@ -18,14 +18,21 @@ public class XanoApiService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${xano.api.base-url}")
-    private String baseUrl;
+    @Value("${xano.api.usuarios-url}")
+    private String usuariosUrl;
+    
+    @Value("${xano.api.productos-url}")
+    private String productosUrl;
 
     public <T> T get(String endpoint, Class<T> responseType) {
-        return get(endpoint, responseType, null);
+        return get(usuariosUrl, endpoint, responseType, null);
     }
 
     public <T> T get(String endpoint, Class<T> responseType, Map<String, Object> queryParams) {
+        return get(usuariosUrl, endpoint, responseType, queryParams);
+    }
+    
+    public <T> T get(String baseUrl, String endpoint, Class<T> responseType, Map<String, Object> queryParams) {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -52,6 +59,10 @@ public class XanoApiService {
     }
 
     public <T> T post(String endpoint, Object body, Class<T> responseType) {
+        return post(usuariosUrl, endpoint, body, responseType);
+    }
+    
+    public <T> T post(String baseUrl, String endpoint, Object body, Class<T> responseType) {
         try {
             HttpHeaders headers = createHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -78,7 +89,7 @@ public class XanoApiService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<Object> entity = new HttpEntity<>(body, headers);
-            String url = baseUrl + endpoint;
+            String url = usuariosUrl + endpoint;
 
             log.debug("PUT Request to Xano: {}", url);
 
@@ -97,7 +108,7 @@ public class XanoApiService {
         try {
             HttpHeaders headers = createHeaders();
             HttpEntity<?> entity = new HttpEntity<>(headers);
-            String url = baseUrl + endpoint;
+            String url = usuariosUrl + endpoint;
 
             log.debug("DELETE Request to Xano: {}", url);
 
@@ -117,5 +128,13 @@ public class XanoApiService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         // Agregar headers de autenticación si son necesarios
         return headers;
+    }
+    
+    public String getProductosUrl() {
+        return productosUrl;
+    }
+    
+    public String getUsuariosUrl() {
+        return usuariosUrl;
     }
 }

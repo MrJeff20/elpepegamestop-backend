@@ -12,7 +12,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/pedidos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PedidoController {
 
     private final XanoApiService xanoApiService;

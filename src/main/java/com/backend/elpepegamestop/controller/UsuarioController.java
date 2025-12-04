@@ -2,6 +2,7 @@ package com.backend.elpepegamestop.controller;
 
 import com.backend.elpepegamestop.dto.LoginRequest;
 import com.backend.elpepegamestop.dto.LoginResponse;
+import com.backend.elpepegamestop.dto.RegisterRequest;
 import com.backend.elpepegamestop.dto.UsuarioDTO;
 import com.backend.elpepegamestop.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -13,15 +14,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    @PostMapping("/registro")
-    public ResponseEntity<UsuarioDTO> registrarUsuario(@RequestBody Map<String, Object> usuarioData) {
-        UsuarioDTO usuario = usuarioService.registrarUsuario(usuarioData);
-        return ResponseEntity.ok(usuario);
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, Object>> registrarUsuario(@RequestBody RegisterRequest registerRequest) {
+        Map<String, Object> response = usuarioService.registrarUsuario(registerRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

@@ -36,7 +36,8 @@ spring:
 # Configuración de Xano API
 xano:
   api:
-    base-url: "https://x8ki-letl-twmt.n7.xano.io/api:k1VDdCRF"
+    usuarios-url: "https://x8ki-letl-twmt.n7.xano.io/api:k1VDdCRF"
+    productos-url: "https://x8ki-letl-twmt.n7.xano.io/api:RhHXFYRP"
     timeout: 10000
     connect-timeout: 5000
     socket-timeout: 10000

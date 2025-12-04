@@ -2,11 +2,13 @@ package com.backend.elpepegamestop.service;
 
 import com.backend.elpepegamestop.dto.LoginRequest;
 import com.backend.elpepegamestop.dto.LoginResponse;
+import com.backend.elpepegamestop.dto.RegisterRequest;
 import com.backend.elpepegamestop.dto.UsuarioDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -17,16 +19,32 @@ public class UsuarioService {
     private final XanoApiService xanoApiService;
 
     /**
-     * Registrar nuevo usuario
+     * Registrar nuevo usuario - Usa el endpoint de signup de Xano
      */
-    public UsuarioDTO registrarUsuario(Map<String, Object> usuarioData) {
-        log.info("Registrando nuevo usuario: {}", usuarioData.get("email"));
+    public Map<String, Object> registrarUsuario(RegisterRequest registerRequest) {
+        log.info("Registrando nuevo usuario: {}", registerRequest.getEmail());
         
-        return xanoApiService.post(
-                "/usuarios",
-                usuarioData,
-                UsuarioDTO.class
-        );
+        // Crear el body con la estructura que espera Xano signup
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", registerRequest.getName());
+        body.put("email", registerRequest.getEmail());
+        body.put("password", registerRequest.getPassword());
+        
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = xanoApiService.post(
+                    "/auth/signup",
+                    body,
+                    Map.class
+            );
+            
+            log.info("Usuario registrado exitosamente: {}", registerRequest.getEmail());
+            return response;
+            
+        } catch (Exception e) {
+            log.error("Error al registrar usuario {}: {}", registerRequest.getEmail(), e.getMessage());
+            throw new RuntimeException("Error al registrar usuario: " + e.getMessage(), e);
+        }
     }
 
     /**

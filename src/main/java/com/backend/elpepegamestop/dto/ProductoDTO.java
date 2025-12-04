@@ -1,33 +1,50 @@
 package com.backend.elpepegamestop.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.NoArgsConstructor;
+import java.util.Map;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductoDTO {
     private Long id;
-    private String nombre;
-    private String descripcion;
-    private BigDecimal precio;
-    private BigDecimal precioOriginal;
+    
+    private String name;
+    
+    private String description;
+    
+    private Integer price;
+    
+    @JsonProperty("image_url")
+    private Object imageUrl;
+    
     private Integer stock;
-    private String categoria;
-    private String plataforma;
-    private String desarrollador;
-    private String imagenUrl;
-    private List<String> imagenes;
-    private Double rating;
-    private Integer cantidadResenas;
-    private Boolean destacado;
-    private Boolean enOferta;
-    private BigDecimal descuento;
-    private LocalDateTime fechaLanzamiento;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    @JsonProperty("xano_id")
-    private String xanoId;
+    
+    private String category;
+    
+    @JsonProperty("created_at")
+    private Long createdAt;
+    
+    // Getter personalizado para obtener la URL de la imagen
+    @SuppressWarnings("unchecked")
+    public String getImageUrl() {
+        if (imageUrl instanceof Map) {
+            Map<String, Object> imageMap = (Map<String, Object>) imageUrl;
+            String path = (String) imageMap.get("path");
+            if (path != null && !path.isEmpty()) {
+                return path;
+            }
+        } else if (imageUrl instanceof String) {
+            return (String) imageUrl;
+        }
+        return "";
+    }
+    
+    // Getter personalizado para disponible basado en stock
+    public Boolean getDisponible() {
+        return stock != null && stock > 0;
+    }
 }
