@@ -32,6 +32,28 @@ public class XanoApiService {
         return get(usuariosUrl, endpoint, responseType, queryParams);
     }
     
+    public <T> T getWithAuth(String endpoint, Class<T> responseType, String authToken) {
+        try {
+            HttpHeaders headers = createHeaders();
+            if (authToken != null) {
+                headers.setBearerAuth(authToken);
+            }
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+
+            String url = usuariosUrl + endpoint;
+            log.debug("GET Request to Xano with auth: {}", url);
+
+            ResponseEntity<T> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, responseType);
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            log.error("Error calling Xano API GET {}: {}", endpoint, e.getMessage(), e);
+            throw new RuntimeException("Error communicating with Xano API: " + e.getMessage(), e);
+        }
+    }
+    
     public <T> T get(String baseUrl, String endpoint, Class<T> responseType, Map<String, Object> queryParams) {
         try {
             HttpHeaders headers = createHeaders();
@@ -92,6 +114,75 @@ public class XanoApiService {
             String url = usuariosUrl + endpoint;
 
             log.debug("PUT Request to Xano: {}", url);
+
+            ResponseEntity<T> response = restTemplate.exchange(
+                    url, HttpMethod.PUT, entity, responseType);
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            log.error("Error calling Xano API PUT {}: {}", endpoint, e.getMessage(), e);
+            throw new RuntimeException("Error communicating with Xano API: " + e.getMessage(), e);
+        }
+    }
+
+    public <T> T patch(String endpoint, Object body, Class<T> responseType) {
+        try {
+            HttpHeaders headers = createHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Object> entity = new HttpEntity<>(body, headers);
+            String url = usuariosUrl + endpoint;
+
+            log.debug("PATCH Request to Xano: {}", url);
+
+            ResponseEntity<T> response = restTemplate.exchange(
+                    url, HttpMethod.PATCH, entity, responseType);
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            log.error("Error calling Xano API PATCH {}: {}", endpoint, e.getMessage(), e);
+            throw new RuntimeException("Error communicating with Xano API: " + e.getMessage(), e);
+        }
+    }
+
+    public <T> T postWithAuth(String endpoint, Object body, Class<T> responseType, String authToken) {
+        try {
+            HttpHeaders headers = createHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            if (authToken != null) {
+                headers.setBearerAuth(authToken);
+            }
+
+            HttpEntity<Object> entity = new HttpEntity<>(body, headers);
+            String url = usuariosUrl + endpoint;
+
+            log.debug("POST Request to Xano with auth: {}", url);
+
+            ResponseEntity<T> response = restTemplate.exchange(
+                    url, HttpMethod.POST, entity, responseType);
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            log.error("Error calling Xano API POST {}: {}", endpoint, e.getMessage(), e);
+            throw new RuntimeException("Error communicating with Xano API: " + e.getMessage(), e);
+        }
+    }
+
+    public <T> T putWithAuth(String endpoint, Object body, Class<T> responseType, String authToken) {
+        try {
+            HttpHeaders headers = createHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            if (authToken != null) {
+                headers.setBearerAuth(authToken);
+            }
+
+            HttpEntity<Object> entity = new HttpEntity<>(body, headers);
+            String url = usuariosUrl + endpoint;
+
+            log.debug("PUT Request to Xano with auth: {}", url);
 
             ResponseEntity<T> response = restTemplate.exchange(
                     url, HttpMethod.PUT, entity, responseType);
